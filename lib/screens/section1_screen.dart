@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../widgets/app_drawer.dart';
 
 class Section1Screen extends StatefulWidget {
   final String district;
@@ -40,6 +41,7 @@ class _Section1ScreenState extends State<Section1Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+       drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A237E),
         title: const Text(

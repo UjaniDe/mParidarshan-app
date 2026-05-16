@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dashboard_screen.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -49,6 +50,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 maxLength: 6,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 style: const TextStyle(fontSize: 24, letterSpacing: 8),
                 decoration: InputDecoration(
                   hintText: '------',
@@ -62,6 +64,14 @@ class _OtpScreenState extends State<OtpScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    if (_otpController.text.length < 6) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter the complete 6-digit OTP'),
+                        ),
+                      );
+                      return;
+                    }
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

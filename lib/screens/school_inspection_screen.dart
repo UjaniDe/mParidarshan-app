@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'section1_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class SchoolInspectionScreen extends StatefulWidget {
   const SchoolInspectionScreen({super.key});
@@ -74,6 +75,7 @@ class _SchoolInspectionScreenState extends State<SchoolInspectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+       drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A237E),
         title: const Text(

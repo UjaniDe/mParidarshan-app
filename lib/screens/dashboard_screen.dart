@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'user_profile_screen.dart';
 import 'school_inspection_screen.dart';
+import 'inspection_history_screen.dart';
+import '../widgets/app_drawer.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -9,13 +11,15 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      drawer: const AppDrawer(),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A237E),
         title: const Text(
           'mParidarshan',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
+iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -65,7 +69,14 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.history,
               title: 'Inspection History',
               subtitle: 'View past inspection records',
-              onTap: () {},
+              onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const InspectionHistoryScreen(),
+    ),
+  );
+},
             ),
           ],
         ),
