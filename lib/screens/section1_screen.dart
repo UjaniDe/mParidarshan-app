@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/app_drawer.dart';
+import '../services/api_service.dart';
 
 class Section1Screen extends StatefulWidget {
   final String district;
@@ -166,24 +167,49 @@ class _Section1ScreenState extends State<Section1Screen> {
 
             const SizedBox(height: 40),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _canProceed() ? () {} : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1A237E),
-                  disabledBackgroundColor: Colors.grey[300],
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: _canProceed()
+        ? () async {
+            String schoolType = _isCoed == 'Yes' ? 'Coed' : _schoolType!;
+            final result = await ApiService.createInspection(
+              district: widget.district,
+              circle: widget.circle,
+              school: widget.school,
+              schoolType: schoolType,
+              boysPresent: _boysPresent.text.isNotEmpty ? int.parse(_boysPresent.text) : null,
+              girlsPresent: _girlsPresent.text.isNotEmpty ? int.parse(_girlsPresent.text) : null,
+              boysAbsent: _boysAbsent.text.isNotEmpty ? int.parse(_boysAbsent.text) : null,
+              girlsAbsent: _girlsAbsent.text.isNotEmpty ? int.parse(_girlsAbsent.text) : null,
+              libraryBooks: _libraryBooks!,
+            );
+            if (result['id'] != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Inspection saved successfully!')),
+              );
+Navigator.pop(context);
+Navigator.pop(context);            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(result['message'] ?? 'Error saving inspection')),
+              );
+            }
+          }
+        : null,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF1A237E),
+      disabledBackgroundColor: Colors.grey[300],
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+    child: const Text(
+      'Submit',
+      style: TextStyle(color: Colors.white, fontSize: 16),
+    ),
+  ),
+),
             const SizedBox(height: 20),
           ],
         ),
