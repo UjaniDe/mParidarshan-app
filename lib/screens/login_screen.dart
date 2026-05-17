@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'otp_screen.dart';
 import 'package:flutter/services.dart';
+import '../services/api_service.dart';
+import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,6 +12,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,39 +44,54 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 12),
-TextField(
-  controller: _phoneController,
-  keyboardType: TextInputType.phone,
-  maxLength: 10,
-  inputFormatters: [
-    FilteringTextInputFormatter.digitsOnly,
-  ],
-  decoration: InputDecoration(
-    prefixText: '+91 ',
-    hintText: '10-digit mobile number',
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-),
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  prefixText: '+91 ',
+                  hintText: '10-digit mobile number',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-onPressed: () {
-  if (_phoneController.text.length < 10) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please enter a valid 10-digit mobile number')),
-    );
-    return;
-  }
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => OtpScreen(phoneNumber: _phoneController.text),
-    ),
-  );
-},
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (_phoneController.text.length < 10) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter a valid 10-digit mobile number'),
+                              ),
+                            );
+                            return;
+                          }
+                          setState(() => _isLoading = true);
+                          final result = await ApiService.sendOtp(_phoneController.text);
+                          setState(() => _isLoading = false);
+                          if (result['message'] == 'OTP sent successfully') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OtpScreen(
+                                  phoneNumber: _phoneController.text,
+                                ),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(result['message'] ?? 'Error sending OTP'),
+                              ),
+                            );
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1A237E),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -82,10 +99,12 @@ onPressed: () {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Send OTP',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Send OTP',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                 ),
               ),
             ],

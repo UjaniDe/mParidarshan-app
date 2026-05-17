@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/dashboard_screen.dart';
 import '../screens/user_profile_screen.dart';
 import '../screens/login_screen.dart';
+import '../services/storage_service.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -76,15 +77,16 @@ class AppDrawer extends StatelessWidget {
             icon: Icons.logout,
             label: 'Logout',
             color: Colors.red,
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
-                (route) => false,
-              );
-            },
+onTap: () async {
+  await StorageService.clearToken();
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const LoginScreen(),
+    ),
+    (route) => false,
+  );
+},
           ),
           const SizedBox(height: 20),
         ],
